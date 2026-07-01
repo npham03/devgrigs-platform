@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+// Bảng Account (Gộp chung Admin, Freelancer, Doanh nghiệp)
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  password      String    // matKhau
+  role          String    @default("FREELANCER") // Các quyền: ADMIN, FREELANCER, DOANH_NGHIEP
+  status        String    @default("ACTIVE") // trangThai
+
+  // Thông tin chung
+  fullName      String?   // hoTen (Freelancer) hoặc tenDoanhNghiep
+  skills        String?   // kiNang
+  profileDetail String?   // hoSoCaNhan / thongTinCongTy
+  portfolioLink String?   // linkTaiLieu / webSite
+
+  // Các mối quan hệ (Relations)
+  projects      Project[] 
+  applications  Application[] 
+  reviews       Review[]  
+  reports       Report[]  
+}
+
+// Bảng Dự Án
+model Project {
+  id               Int      @id @default(autoincrement())
+  title            String   // tieuDe
+  description      String   // moTa
+  budget           Float    // nganSach
+  workType         String   // hinhThucLamViec
+  requiredSkills   String   // kyNangYeuCau
+  postedDate       DateTime @default(now()) // ngayDang
+  deadline         DateTime // hanChot
+  status           String   @default("OPEN") // trangThai
+
+  companyId        Int
+  company          User     @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  applications     Application[]
+}
+
+// Bảng Đơn ứng tuyển
+model Application {
+  id               Int      @id @default(autoincrement())
+  status           String   @default("PENDING") // trangThai
+  appliedDate      DateTime @default(now()) // ngayUngTuyen
+  cvLink           String   // linkCV
+
+  freelancerId     Int
+  freelancer       User     @relation(fields: [freelancerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  projectId        Int
+  project          Project  @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  progresses       WorkProgress[]
+}
+
+// Bảng Tiến độ công việc
+model WorkProgress {
+  id               Int      @id @default(autoincrement())
+  completionPercent Int     // %HoanThanh
+  reportContent    String   // baoCao
+  productLink      String?  // linkSanPham
+  updatedAt        DateTime @default(now()) // thoiGianCapNhat
+
+  applicationId    Int
+  application      Application @relation(fields: [applicationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+// Bảng Đánh giá / Phản hồi
+model Review {
+  id               Int      @id @default(autoincrement())
+  rating           Int      // soSao
+  comment          String   // binhLuan
+  createdAt        DateTime @default(now()) // ngaytao
+
+  userId           Int      
+  user             User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+// Bảng Báo cáo vi phạm
+model Report {
+  id               Int      @id @default(autoincrement())
+  reason           String   // lyDo
+  status           String   @default("PENDING") // trangThai
+  reportedAt       DateTime @default(now()) // ngayBaoCao
+
+  reporterId       Int      
+  reporter         User     @relation(fields: [reporterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
