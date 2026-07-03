@@ -25,8 +25,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-zinc-50 dark:bg-black text-gray-900 dark:text-white">
-        <Navbar /> {/* Gắn Navbar vào layout tổng */}
+      <body className="min-h-full flex flex-col bg-white text-[#202124] font-sans">
+        <Navbar />
         <main className="flex-1">{children}</main>
       </body>
     </html>

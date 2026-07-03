@@ -13,6 +13,13 @@ export const getAllProjects = async () => {
                         fullName: true,
                         email: true
                     }
+                },
+                requiredSkills: {
+                    select: {
+                        id: true,
+                        name: true,
+                        category: true
+                    }
                 }
             }
         });
@@ -24,7 +31,13 @@ export const getAllProjects = async () => {
 
 // TODO: Viết hàm lưu dự án mới do Doanh nghiệp đăng
 export const createProject = async (data: any) => {
-    // Code Prisma insert ở đây
+    // Xử lý danh sách kỹ năng: Hỗ trợ cả mảng chuỗi hoặc chuỗi phân cách bởi dấu phẩy
+    const skillsArray: string[] = Array.isArray(data.requiredSkills)
+        ? data.requiredSkills
+        : typeof data.requiredSkills === 'string'
+            ? data.requiredSkills.split(',').map((s: string) => s.trim()).filter((s: string) => s.length > 0)
+            : [];
+
     try {
         return await db.project.create({
             data: {
@@ -32,10 +45,18 @@ export const createProject = async (data: any) => {
                 description: data.description,
                 budget: Number(data.budget),
                 workType: data.workType || "Remote",
-                requiredSkills: data.requiredSkills || "",
+                requiredSkills: {
+                    connectOrCreate: skillsArray.map((skillName: string) => ({
+                        where: { name: skillName },
+                        create: { name: skillName }
+                    }))
+                },
                 deadline: new Date(data.deadline),
                 companyId: Number(data.companyId),
                 status: "OPEN"
+            },
+            include: {
+                requiredSkills: true
             }
         });
     } catch (error) {

@@ -16,15 +16,25 @@ model User {
 
   // Thông tin chung
   fullName      String?   // hoTen (Freelancer) hoặc tenDoanhNghiep
-  skills        String?   // kiNang
   profileDetail String?   // hoSoCaNhan / thongTinCongTy
   portfolioLink String?   // linkTaiLieu / webSite
 
   // Các mối quan hệ (Relations)
+  skills        Skill[]   @relation("UserSkills")
   projects      Project[] 
   applications  Application[] 
   reviews       Review[]  
   reports       Report[]  
+}
+
+// Bảng Kỹ năng (Tách riêng để tối ưu query, filter, indexing)
+model Skill {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique // Tên kỹ năng (VD: Next.js, React, Node.js...)
+  category    String?   // Nhóm kỹ năng (VD: Frontend, Backend, DevOps...)
+
+  users       User[]    @relation("UserSkills")
+  projects    Project[] @relation("ProjectSkills")
 }
 
 // Bảng Dự Án
@@ -34,7 +44,6 @@ model Project {
   description      String   // moTa
   budget           Float    // nganSach
   workType         String   // hinhThucLamViec
-  requiredSkills   String   // kyNangYeuCau
   postedDate       DateTime @default(now()) // ngayDang
   deadline         DateTime // hanChot
   status           String   @default("OPEN") // trangThai
@@ -42,6 +51,7 @@ model Project {
   companyId        Int
   company          User     @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
+  requiredSkills   Skill[]  @relation("ProjectSkills")
   applications     Application[]
 }
 
@@ -50,7 +60,7 @@ model Application {
   id               Int      @id @default(autoincrement())
   status           String   @default("PENDING") // trangThai
   appliedDate      DateTime @default(now()) // ngayUngTuyen
-  cvLink           String   // linkCV
+  cvLink           String?  // linkCV (Tùy chọn, vì freelancer có thể dùng profile trực tiếp trên platform)
 
   freelancerId     Int
   freelancer       User     @relation(fields: [freelancerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
