@@ -29,23 +29,19 @@ export default function ProjectList({ projects, currentRole }: { projects: Proje
 
     const [appliedProjectIds, setAppliedProjectIds] = useState<number[]>([]);
     const [loadingId, setLoadingId] = useState<number | null>(null);
-
-    const currentFreelancerId = 3; 
-
     const handleApply = async (projectId: number) => {
-        if (!confirm("Bạn có chắc chắn muốn nộp đơn ứng tuyển vào dự án này?")) return;
+    if (!confirm("Bạn có chắc chắn muốn nộp đơn ứng tuyển vào dự án này?")) return;
 
-        setLoadingId(projectId);
-        try {
-            const response = await fetch('/api/applications', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    freelancerId: currentFreelancerId,
-                    projectId: projectId,
-                    cvLink: "https://github.com/nguyenvanlaptrinh/cv.pdf"
-                }),
-            });
+    setLoadingId(projectId);
+    try {
+        const response = await fetch('/api/applications', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                projectId: projectId,
+                cvLink: "https://github.com/nguyenvanlaptrinh/cv.pdf"
+            }),
+        });
 
             const result = await response.json();
 
@@ -81,7 +77,7 @@ export default function ProjectList({ projects, currentRole }: { projects: Proje
                             href="/company/manage" 
                             className="px-4 py-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded shadow-sm transition-colors flex items-center gap-1.5"
                         >
-                            💼 Trang quản lý đơn (Doanh nghiệp)
+                             Trang quản lý đơn (Doanh nghiệp)
                         </Link>
                     )}
 
