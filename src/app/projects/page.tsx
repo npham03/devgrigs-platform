@@ -8,5 +8,5 @@ export default async function ProjectsPage() {
     
     // Ném data sang View để render
     // chỉ nên gọi controller ở đây, không ném data sang View ở component con, vì component con có thể bị re-render nhiều lần
-    return <ProjectList projects={data} />;
+    return <ProjectList projects={data} currentRole="FREELANCER" />;
 }

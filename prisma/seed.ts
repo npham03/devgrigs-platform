@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Skill } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -29,7 +29,8 @@ async function main() {
     { name: 'Docker', category: 'DevOps' },
   ];
 
-  const createdSkills: Record<string, any> = {};
+  const createdSkills: Record<string, Skill> = {};
+  
   for (const skill of skillsData) {
     createdSkills[skill.name] = await prisma.skill.create({ data: skill });
   }
