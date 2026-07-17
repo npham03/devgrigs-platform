@@ -29,8 +29,18 @@ export const getAllProjects = async () => {
     }
 }
 
+export interface CreateProjectInput {
+    title: string;
+    description: string;
+    budget: number | string;
+    workType?: string;
+    requiredSkills?: string[] | string;
+    deadline: string | Date;
+    companyId: number | string;
+}
+
 // TODO: Viết hàm lưu dự án mới do Doanh nghiệp đăng
-export const createProject = async (data: any) => {
+export const createProject = async (data: CreateProjectInput) => {
     // Xử lý danh sách kỹ năng: Hỗ trợ cả mảng chuỗi hoặc chuỗi phân cách bởi dấu phẩy
     const skillsArray: string[] = Array.isArray(data.requiredSkills)
         ? data.requiredSkills

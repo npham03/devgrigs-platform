@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client';
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/models/auth.model';
+import db from '@/models/db';
 import ApplicationManager from '@/views/company/ApplicationManager';
-
-const prisma = new PrismaClient();
 
 export default async function ManageApplicationsPage() {
     const loggedInUser = await getCurrentUser();
@@ -34,7 +32,7 @@ export default async function ManageApplicationsPage() {
         );
     }
 
-    const applications = await prisma.application.findMany({
+    const applications = await db.application.findMany({
         where: { project: { companyId: loggedInUser.id } },
         include: {
             freelancer: { select: { id: true, email: true, fullName: true, profileDetail: true } },

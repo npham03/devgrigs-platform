@@ -67,11 +67,14 @@ export default function ApplicationManager({ initialApplications, currentUserRol
                 alert(`🎉 Thành công: ${result.message}`);
 
                 if (action === 'APPROVE') {
+                    const targetApp = applications.find(a => a.id === applicationId);
+                    const targetProjectId = targetApp?.projectId;
+
                     setApplications((prevApps) =>
                         prevApps.map((app) => {
                             if (app.id === applicationId) {
                                 return { ...app, status: 'APPROVED', project: { ...app.project, status: 'PROCESSING' } };
-                            } else if (app.projectId === app.projectId && app.status === 'PENDING') {
+                            } else if (targetProjectId && app.projectId === targetProjectId && app.status === 'PENDING') {
                                 return { ...app, status: 'REJECTED', project: { ...app.project, status: 'PROCESSING' } };
                             }
                             return app;
